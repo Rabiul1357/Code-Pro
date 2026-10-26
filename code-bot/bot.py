@@ -19,7 +19,7 @@ from firebase_client import (
     get_questions,
     clear_all_questions
 )
-from screen_capture import capture_with_scroll
+from screen_capture import adaptive_multi_scroll_capture, capture_with_scroll
 from gemini_solver import solve_from_images
 
 POLL_INTERVAL_SECONDS = 2
@@ -36,18 +36,27 @@ def banner():
     print(" * Firebase RTDB: Connected (Admin SDK & REST)")
     print(f" * Gemini API Keys: {len(GEMINI_API_KEYS)} configured with auto-failover")
     print(f" * Remote Sync: Listening to web toggle (/bot_status)")
+    print(" * Vision Engine: Adaptive Multi-Scroll & Stitching (LeetCode/HackerRank/All)")
     print("=" * 64)
 
-def perform_capture_and_solve(scroll_count: int = 1):
-    """Executes the capture -> scroll -> solve -> upload pipeline."""
-    log("📸 Starting screen capture sequence in 1 second...")
+def perform_capture_and_solve(max_scrolls: int = 5):
+    """Executes the adaptive multi-scroll -> stitch -> solve -> upload pipeline."""
+    log("📸 Starting adaptive screen capture sequence in 1 second...")
     time.sleep(1)
 
     try:
-        frames = capture_with_scroll(scroll_count=scroll_count, scroll_amount=-550, delay=0.7)
-        log(f"✅ Captured {len(frames)} frames. Analyzing with Gemini Vision AI...")
+        capture_result = adaptive_multi_scroll_capture(
+            max_scrolls=max_scrolls,
+            scroll_amount=-650,
+            delay=0.6,
+            check_horizontal=True
+        )
+        total_frames = len(capture_result.get("frames", []))
+        scrolls = capture_result.get("scrolls_performed", 0)
+        has_h = capture_result.get("has_horizontal", False)
+        log(f"✅ Captured {total_frames} frames ({scrolls} vertical scrolls, horizontal={has_h}). Analyzing with Gemini AI...")
 
-        result = solve_from_images(frames)
+        result = solve_from_images(capture_result)
         print("-" * 55, flush=True)
         print(f"📌 Problem:    {result.get('title')}", flush=True)
         print(f"💻 Language:   {result.get('language')}", flush=True)
