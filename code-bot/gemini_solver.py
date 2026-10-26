@@ -5,14 +5,18 @@ from screen_capture import image_to_base64
 
 PROMPT = """
 You are an expert competitive programmer and technical interview assistant.
-Analyze these screenshot(s) of a coding challenge (e.g., LeetCode, HackerRank, CodeChef, or online test).
-The images may show consecutive scrolled views of the problem description and the coding editor.
+Analyze these screenshot(s) of a coding challenge (e.g., LeetCode, HackerRank, CodeChef, GeeksForGeeks, Mettl, or online assessment platform).
+The images contain sequential scrolled views (vertical and/or horizontal) or a vertically stitched panorama of the full problem.
 
-Please extract the problem details and write an optimal, fully passing solution matching the template.
+Please synthesize all parts into a unified problem understanding:
+- Combine all text across all scrolled views (problem statement, notes, examples, inputs/outputs, and constraints at the bottom).
+- Detect the target programming language and function/class signature from the visible editor.
+- Write an optimal, fully passing solution matching the template.
+
 Return your response ONLY as a valid JSON object with the following fields:
 {
   "title": "A single-line concise title (e.g., '1. Two Sum - Find two indices that add up to target')",
-  "description": "Full problem description, examples, and constraints in clean markdown",
+  "description": "Full problem description, examples, and constraints synthesized in clean markdown",
   "language": "Detected language in editor (e.g. 'cpp', 'python', 'java', 'javascript', 'csharp')",
   "starter_code": "The starter function/class code template visible in the editor",
   "solution_code": "Complete working solution code matching the starter template exactly",
@@ -21,13 +25,29 @@ Return your response ONLY as a valid JSON object with the following fields:
 }
 """
 
-def solve_from_images(images: list) -> dict:
+def solve_from_images(images_input) -> dict:
     """
-    Takes a list of PIL Images (or file paths), encodes them,
-    and calls Gemini Vision API with automatic key and model fallback.
+    Takes a list of PIL Images (or file paths), or a dict from adaptive_multi_scroll_capture,
+    encodes them, and calls Gemini Vision API with automatic key and model fallback.
     """
+    # Normalize input
+    raw_images = []
+    if isinstance(images_input, dict):
+        # Dict from adaptive_multi_scroll_capture
+        stitched = images_input.get("stitched")
+        frames = images_input.get("frames", [])
+        if stitched:
+            raw_images.append(stitched)
+        for f in frames:
+            if f not in raw_images:
+                raw_images.append(f)
+    elif isinstance(images_input, list):
+        raw_images = images_input
+    else:
+        raw_images = [images_input]
+
     image_parts = []
-    for item in images:
+    for item in raw_images:
         if isinstance(item, str):
             # File path
             from PIL import Image
@@ -63,7 +83,7 @@ def solve_from_images(images: list) -> dict:
                     url,
                     headers={"Content-Type": "application/json"},
                     json=payload,
-                    timeout=30
+                    timeout=35
                 )
                 
                 if res.status_code == 200:
