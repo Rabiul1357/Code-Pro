@@ -32,18 +32,18 @@ export default function Navbar({ botActive, questionCount }) {
         {/* Realtime Bot Status Indicator */}
         <div className={`status-pill ${botActive ? "status-active" : "status-inactive"}`}>
           <div className="status-indicator" />
-          <span className="status-text">{botActive ? "Bot Active" : "Bot Paused"}</span>
+          <span className="status-text">{botActive ? "Scanning Screen..." : "Bot Ready"}</span>
         </div>
 
         {/* Start / Stop Toggle Button */}
         <button
           onClick={toggleBot}
           className={`btn ${botActive ? "btn-danger" : "btn-success"} btn-sm`}
-          title={botActive ? "Click to Pause Bot" : "Click to Start Bot"}
+          title={botActive ? "Click to Cancel / Stop Bot" : "Click to Scan & Solve Problem"}
         >
           {botActive ? (
             <>
-              <Square size={13} fill="currentColor" /> <span className="btn-label">Stop Bot</span>
+              <Square size={13} fill="currentColor" /> <span className="btn-label">Scanning (Stop)</span>
             </>
           ) : (
             <>

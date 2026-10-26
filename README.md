@@ -87,57 +87,44 @@ The web dashboard will be available at:
 
 ### Step 2: Run the Python Bot (`code-bot`)
 
-Open a second terminal window:
+Simply double-click **`run.bat`** inside `code-bot/`, or run:
 
 ```powershell
-cd c:\Users\skahi\Downloads\Code-Pro\code-bot
-python bot.py
+cd code-bot
+.\run.bat
 ```
+*(On the first run, `run.bat` automatically creates a virtual environment `.venv` and installs all dependencies. On subsequent runs, it starts instantly via `.venv`!)*
 
-You will see the interactive CLI menu:
+
+You will see the continuous daemon output:
 ```
-============================================================
-      🚀 CODE-PRO AUTOMATED SCANNER & SOLVER BOT
-============================================================
- * Firebase RTDB: Connected (Admin SDK)
- * Gemini API Keys: 5 configured with auto-failover
- * Remote Sync: Listening to web toggle (/bot_status)
-============================================================
-
-MAIN MENU:
-Status in Firebase: 🟢 ACTIVE
- [1] Start Live Monitoring Mode (Auto-listen / Hotkey F9)
- [2] Instant Capture & Solve (3s countdown)
- [3] Test Solve Sample Screenshots (dump/Two Sum)
- [4] Toggle Bot Remote Status (On / Off)
- [5] View Questions in Firebase
- [6] Clear All Questions in Firebase
- [0] Exit
+================================================================
+       🚀 CODE-PRO FULLY AUTOMATED SCANNER BOT
+================================================================
+ * Control Mode:   100% REMOTE (Controlled via Website Navbar)
+ * Terminal Input: NONE REQUIRED (Runs continuously in background)
+ * Remote Polling: Every 2 seconds from Firebase RTDB
+ * Hotkey Fallback: Press 'F9' to trigger manually anytime
+ * Stop Bot:       Press Ctrl+C in this terminal to exit
+================================================================
+[22:25:00] 🔴 Bot initialized in OFF state.
+[22:25:00] 👉 Open your website (http://localhost:5173) and click 'Start Bot' whenever you have a problem on screen.
 ```
 
 ---
 
-### Step 3: Solve a Coding Problem
+### Step 3: Solve Coding Problems (Zero Terminal Touch)
 
-1. **Option 1 (Recommended - Live Monitoring)**:
-   * In `code-bot`, press `1` to enter **Live Monitoring Mode**.
-   * Switch your browser to your coding problem tab (e.g., LeetCode).
-   * Press **`F9`** on your keyboard (or press **`Enter`** in the bot terminal).
-   * The bot will:
-     1. Capture Frame 1 (top of problem).
-     2. Move cursor to question area and scroll down.
-     3. Capture Frame 2 (scrolled problem details & constraints).
-     4. Send both frames to Gemini AI.
-     5. Generate an optimal solution matching the starter template.
-     6. Push the result to Firebase Realtime Database.
-   * Look at your `code-pro` website—the new question and solution will appear **instantly in real time**!
-
-2. **Option 2 (Instant Capture with Countdown)**:
-   * In `code-bot`, press `2`.
-   * You get a 3-second countdown to switch to your browser window before it captures and solves.
-
-3. **Option 3 (Test Mode)**:
-   * Press `3` to run a test on existing sample screenshots without opening a browser.
+1. Keep the Python bot running in the terminal. **You never have to type anything in the terminal.**
+2. Open your coding problem in your browser (LeetCode, HackerRank, etc.).
+3. Open your `code-pro` website (or on your phone/another tab).
+4. Whenever you want to scan and solve a problem, click **"Start Bot"** in the website navbar:
+   - The Python bot automatically detects the trigger within 2 seconds.
+   - It captures the screen, automatically scrolls down to read the full description and constraints, and captures the second frame.
+   - Gemini Vision AI extracts the question, writes an optimal passing solution, and uploads to Firebase.
+   - The solution appears **instantly in real time** on your website inside Monaco Editor!
+   - The bot automatically resets its status back to ready for the next problem.
+5. For the next question, simply click **"Start Bot"** on the website again!
 
 ---
 

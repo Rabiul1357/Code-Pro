@@ -1,6 +1,15 @@
 import os
+import sys
 import time
 import requests
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 from config import FIREBASE_DATABASE_URL
 
 # Check if Firebase Admin SDK can be initialized
